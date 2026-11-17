@@ -9,7 +9,6 @@ typedef struct s_list
 	struct s_list	*link;
 }					t_list;
 
-t_list	*ft_lstlast(t_list *lst);
 
 void	ft_putstr_fd(char *str, int fd)
 {
@@ -40,19 +39,41 @@ int		check(t_list list)
 	return (0);
 }
 
-t_list	*ft_lstnew(char	*content)
+char	*ft_strdup(char  *src, size_t nbytes)
+{
+	char	*dest;
+	size_t	i;
+
+	i = 0;
+	dest = malloc(sizeof(char) * nbytes);
+	if (!dest)
+		return (NULL);
+	while (i < nbytes)
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	return dest;
+}
+
+t_list	*ft_lstnew(char *content, size_t nbytes)
 {
 	t_list	*list;
-
+	
 	list = malloc(sizeof(t_list));
 	if (!list)
 		return (NULL);
-	list->data = content;
+	list->data = ft_strdup(content, nbytes);
+	if (!list->data)
+	{
+		free(list->data);
+		return (NULL);
+	}
 	list->link = NULL;
 	return (list);
 }
 
-t_list	*ft_lstast(t_list *lst)
+t_list	*ft_lstlast(t_list *lst)
 {
 	if (!lst)
 		return (NULL);
@@ -61,7 +82,7 @@ t_list	*ft_lstast(t_list *lst)
 	return (lst);
 }
 
-void	ft_listadd_back(t_list **lst, t_list new)
+void	ft_listadd_back(t_list **lst, t_list *new)
 {
 	t_list	*last;
 
@@ -69,38 +90,39 @@ void	ft_listadd_back(t_list **lst, t_list new)
 		return ;
 	if (!*lst)
 	{
-		*lst = &new;
+		*lst = new;
 		return ;
 	}
 	last = ft_lstlast(*lst);
 	last->link = new;
 }
 
-void	read_bytes(int fd, char *buffer, size_t nbytes)
+void	get_next_line(int fd, size_t nbytes)
 {
 	ssize_t	bytes_read;
-	t_list	*head;
+	t_list	*stash;
+	t_list	*tail;
+	char	buffer[nbytes];
 
 	bytes_read = read(fd, buffer, nbytes);
-	head = ft_lstnew(&buffer);
+	stash = ft_lstnew(buffer, nbytes);
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, nbytes);
-		ft_listadd_back(&head, *ft_lstnew(buffer));
+		tail = ft_lstnew(buffer, nbytes);
+		ft_listadd_back(&stash, tail);
+		ft_putstr_fd(stash->data, 1); //only for debbuging
 	}
 }
 
 int		main(void)
 {
-	char	buffer[5];
-	int		fd = 0;
 	size_t	nbytes;
-	t_list	*list;
+	int		fd = 0;
 
+	nbytes = 5;
 	fd = open("hola.txt", O_RDONLY);
-	nbytes = sizeof(buffer);
-	read_bytes(fd, buffer, nbytes);
-	if (check(*list) > 0)
-		ft_putstr_fd("Newline found", 1);
-	ft_putstr_fd(list->data, 1);
+	get_next_line(fd, nbytes);
+//	if (check(*list) > 0)
+//		ft_putstr_fd("Newline found", 1);
 }
