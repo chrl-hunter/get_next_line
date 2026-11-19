@@ -1,29 +1,70 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   second_attempt.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acoromin@student.42barcelona.com           +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/11/19 17:50:42 by acoromin          #+#    #+#             */
+/*   Updated: 2026/11/19 18:23:54 by acoromin         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-void	ft_lstnew(t_list **head, int fd)
+int	gnl_read(int fd, t_node **head)
 {
+	int	status;
 	
+	status = read(fd, head->data, O_RONLY);
+	return (status);
+}
+
+int	gnl_check(t_node *head)
+{
+	ssize_t	i;
+
+	if (head->len <= 0)
+		return (NULL);
+	while (head)
+	{
+		i = 0;
+		while (i < head->len)
+		{
+			if (head->data[i] == '\n')
+				return (1);
+			i++;
+		}
+		head = head->next;
+	}
+	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-	static t_list	*head = NULL;
+	static t_node	*head;
 	char			*line;
-	size_t			nbytes;
+	int				status;
 
-	line = NULL;
-	nbytes = 0;
-	if (read(fd, &line, 0) < 0) // si el primer read de 0 bytes da fallo de lectura aborta
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	if (!gnl_check(head))
 	{
-		ft_lstdel(&head);
+		status = gnl_read(fd, &head);
+		if (status < 0)
+		{
+			gnl_clear(&head);
+			return (NULL);
+		}
+	}
+	if (!head)
+		return (NULL);
+	line = gnl_extract(head);
+	if (!line)
+	{
+		gnl_clear(&head);
 		return (NULL);
 	}
-	if (fd < 0 || BUFFER_SIZE <= 0) // si no hay buffer_size y el fd es negativo(error code) aborta
-		return (NULL);
-	ft_lstnew(&head, fd);
-	if (head == NULL) // si fallo al crear el stash aborta
-		return (NULL);
-	line = ft_newline(&head, line, nbytes); // sobreescribe el BUFFER
-	ft_lstclear(&head);
+	gnl_cleanup(&head);
 	return (line);
 }
