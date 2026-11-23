@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acoromin@student.42barcelona.com           +#+  +:+       +#+        */
+/*   By: cperez-h@student.42barcelona.com           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/19 17:50:51 by acoromin          #+#    #+#             */
-/*   Updated: 2026/11/19 17:50:53 by acoromin         ###   ########.fr       */
+/*   Created: 2026/11/23 15:38:20 by cperez-h          #+#    #+#             */
+/*   Updated: 2026/11/23 16:04:57 by cperez-h         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE = 1024
 #endif
@@ -42,7 +41,7 @@ int		gnl_read(int fd, t_node **head);
 // Tiene acceso completo al nodo; es decir sabe su data, len, y next
 //		-> es una pista para saber a lo que llama esta funcion
 //		-> deberia devolver un ssize_t siendo este la cantidad de bytes leidos (-1 significa error de lectura)
-// 
+void	gnl_tail(t_node **head, t_node *new);
 int		gnl_check(t_node *head);
 // Evalua el string del nodo y lo recorre para verificar si hay "/n"
 //		-> si solo recibe *head, puede acceder a len?
