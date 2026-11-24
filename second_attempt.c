@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   second_attempt.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acoromin@student.42barcelona.com           +#+  +:+       +#+        */
+/*   By: cperez-h@student.42barcelona.com           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/19 17:50:42 by acoromin          #+#    #+#             */
-/*   Updated: 2026/11/23 18:06:56 by cperez-h         ###   ########.fr       */
+/*   Created: 2026/11/24 12:35:15 by cperez-h          #+#    #+#             */
+/*   Updated: 2026/11/24 13:14:54 by cperez-h         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "get_next_line.h"
 
@@ -127,14 +128,53 @@ char	*gnl_extract(t_node *head)
 
 void	gnl_cleanup(t_node **head)
 {
-	t_node	tail; 
+	t_node	*tmp; 
+	ssize_t	i;
+	ssize_t	j;
 
-	if (head->next)
+	while (*head)
 	{
-		free(head->data);
-		free(head);
+		i = 0;
+		while (i < (*head)->len)
+		{
+			if ((*head)->data[i] == '\n')
+			{
+				j = 0;
+				i++;
+				while (i < (*head)->len)
+					(*head)->data[j++] = (*head)->data[i++];
+				(*head)->len = j;
+				if (j == 0)
+				{
+					tmp = head;
+					*head = (*head)->next;
+					free(tmp->data);
+					free(tmp);
+				}
+				return ;
+			}
+			i++;
+		}
+		tmp = *head;
+		*head = (*head)->next;
+		free(tmp->data);
+		free(tmp);
 	}
 }
+
+void	gnl_clear(t_node **head)
+{
+	t_node	*tmp;
+
+	while (*head)
+	{
+		tmp = *head;
+		*head = (*head)->next;
+		free(tmp->data);
+		free(tmp);
+	}
+}
+
 char	*get_next_line(int fd)
 {
 	static t_node	*head;
