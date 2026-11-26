@@ -6,7 +6,7 @@
 /*   By: cperez-h@student.42barcelona.com           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 15:05:52 by cperez-h          #+#    #+#             */
-/*   Updated: 2026/11/24 15:55:14 by cperez-h         ###   ########.fr       */
+/*   Updated: 2026/11/26 17:13:22 by cperez-h         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -101,7 +101,7 @@ static void	gnl_cleanup(t_node **head)
 			free(tmp->data);
 			free(tmp);
 		}
-	}
+	} // que pasa si dentro del nodo se encuentran 2 newline?
 }
 
 char	*get_next_line(int fd)
